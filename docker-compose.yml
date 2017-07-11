@@ -8,8 +8,6 @@ services:
             - app
         ports:
             - 127.0.0.1:8082:80
-        env_file:
-            - .env
         networks:
             - default
 
