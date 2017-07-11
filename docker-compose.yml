@@ -1,0 +1,83 @@
+version: '2'
+
+services:
+    nginx:
+        container_name: gryc-nginx
+        build: ./docker/nginx
+        volumes_from:
+            - app
+        ports:
+            - 127.0.0.1:8082:80
+        env_file:
+            - .env
+        networks:
+            - default
+
+    app:
+        container_name: gryc-app
+        build: ./docker/app
+        volumes:
+            - app_data:/var/www/html/files
+        env_file:
+            - .env
+        networks:
+            - default
+
+    redis:
+        container_name: gryc-redis
+        image: redis:3.2.9
+        networks:
+            - default
+
+    db:
+        container_name: gryc-db
+        image: mariadb:10.3.0
+        environment:
+            - MYSQL_ROOT_PASSWORD=${DATABASE_ROOT_PASSWORD}
+            - MYSQL_USER=${DATABASE_USER}
+            - MYSQL_PASSWORD=${DATABASE_PASSWORD}
+            - MYSQL_DATABASE=${DATABASE_NAME}
+        volumes:
+            - db_data:/var/lib/mysql
+        networks:
+            - default
+
+    es:
+        container_name: gryc-es
+        build: ./docker/elasticsearch
+        environment:
+            - bootstrap.memory_lock=true
+            - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+        ulimits:
+            memlock:
+                soft: -1
+                hard: -1
+            nofile:
+                soft: 65536
+                hard: 65536
+        cap_add:
+            - IPC_LOCK
+        volumes:
+            - es_data:/usr/share/elasticsearch/data
+        networks:
+            - default
+
+    rabbitmq:
+        container_name: gryc-rabbitmq
+        image: rabbitmq:3.6.10-management
+        environment:
+            - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
+            - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD}
+        networks:
+            - default
+
+volumes:
+    app_data:
+        driver: local
+    db_data:
+        driver: local
+    es_data:
+        driver: local
+
+networks:
+    default:
