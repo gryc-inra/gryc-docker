@@ -27,5 +27,6 @@ sed -i -e \
 
 /var/www/html/bin/console cache:clear --no-warmup
 /var/www/html/bin/console cache:warmup
+chown -R www-data:www-data var/cache var/logs && chmod -R 777 var/cache var/logs
 
 exec "$@"
