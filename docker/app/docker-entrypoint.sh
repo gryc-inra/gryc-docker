@@ -22,7 +22,8 @@ sed -i -e \
     s/__MAILER_USER__/${MAILER_USER}/g;
     s/__MAILER_PASSWORD__/${MAILER_PASSWORD}/g;
     s/__RECAPTCHA_PUBLIC_KEY__/${RECAPTCHA_PUBLIC_KEY}/g;
-    s/__RECAPTCHA_PRIVATE_KEY__/${RECAPTCHA_PRIVATE_KEY}/g
+    s/__RECAPTCHA_PRIVATE_KEY__/${RECAPTCHA_PRIVATE_KEY}/g;
+    s/__APP_VERSION__/"`echo ${GRYC_VERSION} | md5sum | cut -f1 -d' '`"/g
     " $parametersFile
 
 /var/www/html/bin/console cache:clear --no-warmup
