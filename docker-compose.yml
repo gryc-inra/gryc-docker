@@ -13,7 +13,7 @@ services:
 
     app:
         container_name: gryc-app
-        image: mpiot/gryc:${GRYC_VERSION}
+        build: ./docker/app
         volumes:
             - app_data:/var/www/html/files
         env_file:
