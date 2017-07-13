@@ -26,8 +26,14 @@ sed -i -e \
     s/__APP_VERSION__/"`echo ${GRYC_VERSION} | md5sum | cut -f1 -d' '`"/g
     " $parametersFile
 
-/var/www/html/bin/console cache:clear --no-warmup
-/var/www/html/bin/console cache:warmup
-chown -R www-data:www-data var/cache var/logs && chmod -R 777 var/cache var/logs
+# Clear the cache and change authorizations
+# Depend of the environment: dev or prod
+/var/www/html/bin/console cache:clear --no-warmup --env ${SYMFONY_ENVIRONMENT}
+/var/www/html/bin/console cache:warmup --env ${SYMFONY_ENVIRONMENT}
+
+if ["${SYMFONY_ENVIRONMENT}" == "prod"]
+then
+    chown -R 33:33 var/cache var/logs && chmod -R 777 var/cache var/logs
+fi
 
 exec "$@"
