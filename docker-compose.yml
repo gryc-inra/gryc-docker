@@ -14,8 +14,6 @@ services:
     app:
         container_name: gryc-app
         build: ./docker/app
-        volumes:
-            - app_data:/var/www/html/files
         env_file:
             - .env
         networks:
@@ -24,6 +22,8 @@ services:
     redis:
         container_name: gryc-redis
         image: redis:3.2.9
+        volumes:
+            - redis_data:/data
         networks:
             - default
 
@@ -66,15 +66,19 @@ services:
         environment:
             - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
             - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD}
+        volumes:
+            - rabbitmq_data:/var/lib/rabbitmq
         networks:
             - default
 
 volumes:
-    app_data:
-        driver: local
     db_data:
         driver: local
     es_data:
+        driver: local
+    redis_data:
+        driver: local
+    rabbitmq_data:
         driver: local
 
 networks:
