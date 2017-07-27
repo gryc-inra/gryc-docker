@@ -1,10 +1,6 @@
 FROM php:7.1.6-fpm
 
-######################################
-# Install PHP requirements and MAFFT #
-######################################
-
-# Install wget, git and libraries needed by php extensions
+# Install wget, git, mafft and libraries needed by php extensions
 RUN apt-get update; \
     apt-get install -y \
             zlib1g-dev \
@@ -38,9 +34,6 @@ RUN php -r "readfile('https://getcomposer.org/installer');" | php -- --install-d
 COPY ./php.ini /usr/local/etc/php/
 COPY ./php-cli.ini /usr/local/etc/php/
 
-##################
-## Install BLAST #
-##################
 # Download, extract and remove BLAST archive
 RUN cd /opt && wget ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/ncbi-blast-2.6.0+-x64-linux.tar.gz && \
     tar zxvpf ncbi-blast-2.6.0+-x64-linux.tar.gz && \
@@ -49,29 +42,25 @@ RUN cd /opt && wget ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/n
 # Set environment variables for BLAST
 ENV PATH=$PATH:/opt/ncbi-blast-2.6.0+/bin
 
-###################
-# Add source code #
-###################
+# Define the working directory
 WORKDIR /var/www/html
 
+# Download the Gryc source code
 ENV GRYC_VERSION=0.1-dev
-
 RUN curl -o gryc.tar.gz -fSL "https://github.com/mpiot/gryc/archive/${GRYC_VERSION}.tar.gz"; \
 	tar -xzf gryc.tar.gz -C /var/www/html --strip 1; \
 	rm gryc.tar.gz; \
+	rm .gitignore Gruntfile.js package.json README.md web/config.php web/app_dev.php; \
 	chown -R www-data:www-data /var/www/html
 
-# Install Vendors
+# Install app dependencies
 RUN composer install --no-suggest --optimize-autoloader
 RUN chown -R www-data:www-data . && chmod -R 777 var/cache var/logs
 
 VOLUME /var/www/html
 
-##############
-# Supervisor #
-##############
+# Copy the supervisor configuration file
 COPY ./supervisor-programs.conf /etc/supervisor/conf.d/supervisor-programs.conf
-COPY ./docker-entrypoint.sh /usr/local/bin/
 
-ENTRYPOINT ["docker-entrypoint.sh"]
-CMD /usr/bin/supervisord -n -c /etc/supervisor/supervisord.conf
+# Execute supervisor
+CMD ["/usr/bin/supervisord", "-n", "-c", "/etc/supervisor/supervisord.conf"]
