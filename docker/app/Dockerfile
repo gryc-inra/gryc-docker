@@ -57,8 +57,10 @@ RUN curl -o gryc.tar.gz -fSL "https://github.com/mpiot/gryc/archive/${GRYC_VERSI
 RUN composer install --no-suggest --optimize-autoloader
 RUN chown -R www-data:www-data . && chmod -R 777 var/cache var/logs
 
-# Copy the supervisor configuration file
-COPY ./supervisor-programs.conf /etc/supervisor/conf.d/supervisor-programs.conf
+# Copy the entrypoint file and define it
+COPY ./docker-entrypoint.sh /usr/local/bin/
+ENTRYPOINT ["docker-entrypoint.sh"]
 
-# Execute supervisor
+# Copy the supervisor configuration file and define it as CMD
+COPY ./supervisor-programs.conf /etc/supervisor/conf.d/supervisor-programs.conf
 CMD ["/usr/bin/supervisord", "-n", "-c", "/etc/supervisor/supervisord.conf"]

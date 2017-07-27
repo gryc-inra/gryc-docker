@@ -8,6 +8,8 @@ services:
             - ../gryc:/var/www/html
 
     app:
+        environment:
+            - SYMFONY_ENV=dev
         volumes:
             - ../gryc:/var/www/html
 

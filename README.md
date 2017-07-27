@@ -46,3 +46,7 @@ more opened ports to debug, and es-head to see the Elasticsearch Index.
 
     This token are used to protect the forms in the app.
     You can have it on https://www.google.com/recaptcha, and get an 'Invisible reCAPTCHA'
+
+9. SYMFONY_ENV
+
+    Used for clear and warmup the cache.

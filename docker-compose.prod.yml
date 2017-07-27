@@ -6,6 +6,8 @@ services:
             context: ./docker/nginx
             dockerfile: Dockerfile-prod
     app:
+        environment:
+            - SYMFONY_ENV=prod
         volumes:
             - app_src:/var/www/html
             - app_data:/var/www/html/files
