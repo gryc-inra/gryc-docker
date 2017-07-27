@@ -17,10 +17,14 @@ services:
         ports:
             - 127.0.0.1:3308:3306
 
-    es:
+    es1:
         ports:
             - 127.0.0.1:9200:9200
             - 127.0.0.1:9300:9300
+        volumes:
+            - ./docker/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
+
+    es2:
         volumes:
             - ./docker/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
 
