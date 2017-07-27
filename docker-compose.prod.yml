@@ -7,11 +7,14 @@ services:
             dockerfile: Dockerfile-prod
     app:
         volumes:
+            - app_src:/var/www/html
             - app_data:/var/www/html/files
             - app_cache:/var/www/html/var/cache
             - app_logs:/var/www/html/var/logs
 
 volumes:
+    app_src:
+        driver: local
     app_data:
         driver: local
     app_cache:

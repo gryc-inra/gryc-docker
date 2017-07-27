@@ -57,8 +57,6 @@ RUN curl -o gryc.tar.gz -fSL "https://github.com/mpiot/gryc/archive/${GRYC_VERSI
 RUN composer install --no-suggest --optimize-autoloader
 RUN chown -R www-data:www-data . && chmod -R 777 var/cache var/logs
 
-VOLUME /var/www/html
-
 # Copy the supervisor configuration file
 COPY ./supervisor-programs.conf /etc/supervisor/conf.d/supervisor-programs.conf
 
