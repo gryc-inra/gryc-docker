@@ -17,6 +17,10 @@ services:
             - app_cache:/var/www/html/var/cache
             - app_logs:/var/www/html/var/logs
 
+    logstash:
+        volumes:
+            - app_logs:/var/log/app
+
 volumes:
     app_src:
         driver: local
