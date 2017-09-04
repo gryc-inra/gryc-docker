@@ -1,4 +1,4 @@
-FROM php:7.1.6-fpm
+FROM php:7.1.8-fpm
 
 # Install wget, git, mafft and libraries needed by php extensions
 RUN apt-get update; \
