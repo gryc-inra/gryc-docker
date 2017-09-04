@@ -4,10 +4,11 @@ services:
     nginx:
         container_name: gryc-nginx
         build: ./docker/nginx
-        volumes_from:
-            - app
         ports:
             - 127.0.0.1:8082:80
+        depends_on:
+            - logstash
+            - app
         networks:
             - default
 
@@ -25,6 +26,11 @@ services:
             - SYMFONY_SECRET=ThisTokenIsNotSoSecretChangeIt
             - RECAPTCHA_PUBLIC_KEY=ReplaceWithYourOwnReCaptchaPublicKeyForInvisibleCatcha
             - RECAPTCHA_PRIVATE_KEY=ReplaceWithYourOwnReCaptchaPrivateKeyForInvisibleCatcha
+        depends_on:
+            - redis
+            - rabbitmq
+            - db
+            - es1
         networks:
             - default
 
@@ -33,6 +39,18 @@ services:
         image: redis:4.0.1
         volumes:
             - redis_data:/data
+        networks:
+            - default
+
+    rabbitmq:
+        container_name: gryc-rabbitmq
+        image: rabbitmq:3.6.11-management
+        environment:
+            - RABBITMQ_DEFAULT_VHOST=gryc
+            - RABBITMQ_DEFAULT_USER=gryc
+            - RABBITMQ_DEFAULT_PASS=gryc
+        volumes:
+            - rabbitmq_data:/var/lib/rabbitmq
         networks:
             - default
 
@@ -97,13 +115,8 @@ services:
     logstash:
         container_name: gryc-logstash
         build: ./docker/logstash
-        ports:
-            - 127.0.0.1:5044:5044
         depends_on:
             - es1
-        volumes:
-            - nginx_log:/var/log/nginx
-            - ./docker/logstash/pipeline:/usr/share/logstash/pipeline
         networks:
             - default
 
@@ -114,37 +127,19 @@ services:
             - 127.0.0.1:5601:5601
         depends_on:
             - es1
-        links:
-            - es1
-        networks:
-            - default
-
-    rabbitmq:
-        container_name: gryc-rabbitmq
-        image: rabbitmq:3.6.11-management
-        environment:
-            - RABBITMQ_DEFAULT_VHOST=gryc
-            - RABBITMQ_DEFAULT_USER=gryc
-            - RABBITMQ_DEFAULT_PASS=gryc
-        volumes:
-            - rabbitmq_data:/var/lib/rabbitmq
         networks:
             - default
 
 volumes:
-    nginx_log:
-        driver: local
     db_data:
-        driver: local
-    es1_data:
-        driver: local
-    es2_data:
-        driver: local
-    logstash_data:
         driver: local
     redis_data:
         driver: local
     rabbitmq_data:
+        driver: local
+    es1_data:
+        driver: local
+    es2_data:
         driver: local
 
 networks:
