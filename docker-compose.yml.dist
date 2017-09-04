@@ -38,7 +38,7 @@ services:
 
     db:
         container_name: gryc-db
-        image: mariadb:10.3.0
+        image: mariadb:10.3.1
         environment:
             - MYSQL_ROOT_PASSWORD
             - MYSQL_USER=gryc
