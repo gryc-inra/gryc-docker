@@ -121,7 +121,7 @@ services:
 
     rabbitmq:
         container_name: gryc-rabbitmq
-        image: rabbitmq:3.6.10-management
+        image: rabbitmq:3.6.11-management
         environment:
             - RABBITMQ_DEFAULT_VHOST=gryc
             - RABBITMQ_DEFAULT_USER=gryc
