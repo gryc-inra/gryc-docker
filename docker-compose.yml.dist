@@ -30,7 +30,7 @@ services:
 
     redis:
         container_name: gryc-redis
-        image: redis:3.2.9
+        image: redis:4.0.1
         volumes:
             - redis_data:/data
         networks:
