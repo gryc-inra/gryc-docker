@@ -3,8 +3,8 @@ version: '2'
 services:
     nginx:
         volumes:
-            - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
-            - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+            - ./docker/nginx/vhost/default.conf:/etc/nginx/conf.d/default.conf:ro
+            - ./docker/nginx/config/nginx.conf:/etc/nginx/nginx.conf:ro
             - ../gryc:/var/www/html
 
     app:
@@ -22,11 +22,11 @@ services:
             - 127.0.0.1:9200:9200
             - 127.0.0.1:9300:9300
         volumes:
-            - ./docker/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
+            - ./docker/elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
 
     es2:
         volumes:
-            - ./docker/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
+            - ./docker/elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
 
     es-head:
         container_name: gryc-es-head
