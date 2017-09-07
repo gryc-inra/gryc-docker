@@ -46,7 +46,7 @@ ENV PATH=$PATH:/opt/ncbi-blast-2.6.0+/bin
 WORKDIR /var/www/html
 
 # Download the Gryc source code
-ENV GRYC_VERSION=0.1-dev
+ENV GRYC_VERSION=0.2-dev
 RUN curl -o gryc.tar.gz -fSL "https://github.com/mpiot/gryc/archive/${GRYC_VERSION}.tar.gz"; \
 	tar -xzf gryc.tar.gz -C /var/www/html --strip 1; \
 	rm gryc.tar.gz; \
