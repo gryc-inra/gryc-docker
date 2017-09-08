@@ -50,3 +50,47 @@ more opened ports to debug, and es-head to see the Elasticsearch Index.
 9. SYMFONY_ENV
 
     Used for clear and warmup the cache.
+
+## How to install
+
+Assuming that the files are in a folder called **gryc**, and you have read the introduction to correctly define the docker-compose files.
+
+1. Build images
+
+    docker-compose -f docker-compose.yml -f docker-compose.prod.yml build
+
+2. Create containers
+
+    docker-compose -f docker-compose.yml -f docker-compose.prod.yml create
+    
+6. Start new containers and reconstruct the gryc_app_src
+
+    docker-compose -f docker-compose.yml -f docker-compose.prod.yml build -d
+
+## How to update
+
+Assuming that you followed the installation above.
+
+1. Build new images
+
+    docker-compose -f docker-compose.yml -f docker-compose.prod.yml build
+
+2. Create new containers
+
+    docker-compose -f docker-compose.yml -f docker-compose.prod.yml create
+ 
+3. Stop containers
+
+    docker-compose -f docker-compose.yml -f docker-compose.prod.yml stop
+
+4. Delete app and nginx containers
+
+    docker rm gryc-nginx gryc-app
+
+5. Delete gryc_app_src volume
+
+    docker volume rm gryc_app_src
+    
+6. Start new containers and reconstruct the gryc_app_src
+
+    docker-compose -f docker-compose.yml -f docker-compose.prod.yml build -d
