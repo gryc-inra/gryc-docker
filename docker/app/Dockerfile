@@ -22,10 +22,16 @@ RUN curl -sS -o /tmp/icu.tar.gz -L http://download.icu-project.org/files/icu4c/5
 # To avoid a bug with the intl extension compilation
 # PHP_CPPFLAGS are used by the docker-php-ext-* scripts
 ENV PHP_CPPFLAGS="$PHP_CPPFLAGS -std=c++11"
+
 # Configure, install and enable php extensions
-RUN docker-php-ext-configure intl --with-icu-dir=/usr/local; \
-    docker-php-ext-install intl pdo pdo_mysql zip bcmath; \
-    docker-php-ext-enable opcache
+RUN docker-php-source extract \
+    && docker-php-ext-configure intl --with-icu-dir=/usr/local \
+    && docker-php-ext-install intl pdo pdo_mysql zip bcmath \
+    && docker-php-ext-enable opcache \
+    && docker-php-source delete
+
+RUN pecl install apcu-5.1.8 \
+    && docker-php-ext-enable apcu
 
 # Install Composer
 RUN php -r "readfile('https://getcomposer.org/installer');" | php -- --install-dir=/usr/local/bin --filename=composer && chmod +x /usr/local/bin/composer
