@@ -65,7 +65,7 @@ Assuming that the files are in a folder called **gryc**, and you have read the i
     
 6. Start new containers and reconstruct the gryc_app_src
 
-    docker-compose -f docker-compose.yml -f docker-compose.prod.yml build -d
+    docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 
 ## How to update
 
@@ -93,4 +93,19 @@ Assuming that you followed the installation above.
     
 6. Start new containers and reconstruct the gryc_app_src
 
-    docker-compose -f docker-compose.yml -f docker-compose.prod.yml build -d
+    docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+
+
+## How to install xDebug
+
+1. Enter in the container
+
+    docker exec -it gryc-app bash
+    
+2. Use the followed commands
+
+    pecl install xdebug-2.5.0 && docker-php-ext-enable xdebug
+
+3. Restart the container
+
+    docker-compose -f docker-compose.yml -f docker-compose.prod.yml restart
