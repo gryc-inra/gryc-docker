@@ -39,7 +39,3 @@ services:
     rabbitmq:
         ports:
             - 127.0.0.1:15672:15672
-
-    logstash:
-        volumes:
-            - ../gryc/var/logs:/var/log/app

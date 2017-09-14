@@ -14,22 +14,12 @@ services:
         volumes:
             - app_src:/var/www/html
             - app_data:/var/www/html/files
-            - app_cache:/var/www/html/var/cache
-            - app_logs:/var/www/html/var/logs
-            - app_sessions:/var/www/html/var/sessions
-
-    logstash:
-        volumes:
-            - app_logs:/var/log/app
+            - app_var:/var/www/html/var
 
 volumes:
     app_src:
         driver: local
     app_data:
         driver: local
-    app_cache:
-        driver: local
-    app_logs:
-        driver: local
-    app_sessions:
+    app_var:
         driver: local
