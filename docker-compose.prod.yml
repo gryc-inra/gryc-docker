@@ -16,6 +16,7 @@ services:
             - app_data:/var/www/html/files
             - app_cache:/var/www/html/var/cache
             - app_logs:/var/www/html/var/logs
+            - app_sessions:/var/www/html/var/sessions
 
     logstash:
         volumes:
@@ -29,4 +30,6 @@ volumes:
     app_cache:
         driver: local
     app_logs:
+        driver: local
+    app_sessions:
         driver: local
