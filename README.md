@@ -75,26 +75,25 @@ Assuming that you followed the installation above.
 
     docker-compose -f docker-compose.yml -f docker-compose.prod.yml build
 
-2. Create new containers
-
-    docker-compose -f docker-compose.yml -f docker-compose.prod.yml create
- 
-3. Stop containers
+2. Stop containers
 
     docker-compose -f docker-compose.yml -f docker-compose.prod.yml stop
 
-4. Delete app and nginx containers
+3. Delete app and nginx containers
 
     docker rm gryc-nginx gryc-app
 
-5. Delete gryc_app_src volume
+7. Delete gryc_app_src volume
 
     docker volume rm gryc_app_src
-    
+
+5. Create new containers
+
+    docker-compose -f docker-compose.yml -f docker-compose.prod.yml create
+
 6. Start new containers and reconstruct the gryc_app_src
 
     docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
-
 
 ## How to install xDebug
 
