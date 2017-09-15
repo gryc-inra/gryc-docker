@@ -2,6 +2,7 @@ version: '2'
 
 services:
     nginx:
+        restart: always
         build:
             context: ./docker/nginx
             dockerfile: Dockerfile-prod
@@ -9,12 +10,25 @@ services:
             - app_src:/var/www/html
 
     app:
+        restart: always
         environment:
             - SYMFONY_ENV=prod
         volumes:
             - app_src:/var/www/html
             - app_data:/var/www/html/files
             - app_var:/var/www/html/var
+
+    rabbitmq:
+        restart: always
+
+    db:
+        restart: always
+
+    es1:
+        restart: always
+
+    es2:
+        restart: always
 
 volumes:
     app_src:
