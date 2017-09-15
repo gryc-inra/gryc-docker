@@ -16,7 +16,6 @@ services:
         build: ./docker/app
         environment:
             - DATABASE_URL=mysql://gryc:gryc@db:3306/gryc
-            - REDIS_DSN=redis://redis
             - ELASTICSEARCH_URL=http://es1:9200
             - RABBITMQ_URL=amqp://gryc:gryc@rabbitmq:5672/gryc?lazy=1&connection_timeout=3&read_write_timeout=3
             - MAILER_URL=smtp://login:password@host?encryption=ssl&auth_mode=login
