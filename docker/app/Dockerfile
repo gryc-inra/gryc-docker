@@ -1,13 +1,21 @@
 FROM php:7.1.9-fpm
 
-# Install wget, git, mafft and libraries needed by php extensions
+# Add repositories
 RUN apt-get update; \
-    apt-get install -y \
+    apt-get install -y apt-transport-https; \
+    curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -; \
+    echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list; \
+    curl -sL https://deb.nodesource.com/setup_8.x | bash -;
+
+# Install wget, git, mafft and libraries needed by php extensions
+RUN apt-get install -y \
             zlib1g-dev \
             wget \
             git \
             mafft \
             supervisor \
+            nodejs \
+            yarn \
     ; \
     rm -rf /var/lib/apt/lists/*
 
@@ -52,12 +60,18 @@ ENV PATH=$PATH:/opt/ncbi-blast-2.6.0+/bin
 WORKDIR /var/www/html
 
 # Download the Gryc source code
-ENV GRYC_VERSION=0.1-dev
+ENV GRYC_VERSION=2017.9.20.1030-dev
 RUN curl -o gryc.tar.gz -fSL "https://github.com/mpiot/gryc/archive/${GRYC_VERSION}.tar.gz"; \
 	tar -xzf gryc.tar.gz -C /var/www/html --strip 1; \
 	rm gryc.tar.gz; \
-	rm .gitignore Gruntfile.js package.json README.md web/config.php web/app_dev.php; \
+	rm .gitignore .php_cs.dist phpunit.xml.dist README.md web/config.php web/app_dev.php; \
 	chown -R www-data:www-data /var/www/html
+
+# Compile assets
+RUN yarn install; \
+    yarn prod; \
+    rm -R node_modules/; \
+    apt-get autoremove -y --purge nodejs yarn;
 
 # Install app dependencies
 RUN composer install --no-suggest --optimize-autoloader
