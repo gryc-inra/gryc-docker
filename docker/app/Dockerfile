@@ -49,9 +49,11 @@ COPY ./php.ini /usr/local/etc/php/
 COPY ./php-cli.ini /usr/local/etc/php/
 
 # Download, extract and remove BLAST archive
-RUN cd /opt && wget ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/ncbi-blast-2.6.0+-x64-linux.tar.gz && \
-    tar zxvpf ncbi-blast-2.6.0+-x64-linux.tar.gz && \
-    rm ncbi-blast-2.6.0+-x64-linux.tar.gz
+ENV BLAST_VERSION=2.7.0+
+RUN cd /opt && \
+	wget ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/ncbi-blast-${BLAST_VERSION}-x64-linux.tar.gz && \
+    tar zxvpf ncbi-blast-${BLAST_VERSION}-x64-linux.tar.gz && \
+    rm ncbi-blast-${BLAST_VERSION}-x64-linux.tar.gz
 
 # Set environment variables for BLAST
 ENV PATH=$PATH:/opt/ncbi-blast-2.6.0+/bin
