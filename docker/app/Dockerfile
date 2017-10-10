@@ -56,7 +56,7 @@ RUN cd /opt && \
     rm ncbi-blast-${BLAST_VERSION}-x64-linux.tar.gz
 
 # Set environment variables for BLAST
-ENV PATH=$PATH:/opt/ncbi-blast-2.6.0+/bin
+ENV PATH=$PATH:/opt/ncbi-blast-${BLAST_VERSION}/bin
 
 # Define the working directory
 WORKDIR /var/www/html
