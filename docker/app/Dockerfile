@@ -1,4 +1,4 @@
-FROM php:7.1.9-fpm
+FROM php:7.1.10-fpm
 
 # Add repositories
 RUN apt-get update; \
