@@ -7,12 +7,11 @@ RUN apt-get update; \
     echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list; \
     curl -sL https://deb.nodesource.com/setup_8.x | bash -;
 
-# Install wget, git, mafft and libraries needed by php extensions
+# Install wget, git, supervisor, yarn and libraries needed by php extensions
 RUN apt-get install -y \
             zlib1g-dev \
             wget \
             git \
-            mafft \
             supervisor \
             nodejs \
             yarn \
@@ -32,14 +31,14 @@ RUN curl -sS -o /tmp/icu.tar.gz -L http://download.icu-project.org/files/icu4c/5
 ENV PHP_CPPFLAGS="$PHP_CPPFLAGS -std=c++11"
 
 # Configure, install and enable php extensions
-RUN docker-php-source extract \
-    && docker-php-ext-configure intl --with-icu-dir=/usr/local \
-    && docker-php-ext-install intl pdo pdo_mysql zip bcmath \
-    && docker-php-ext-enable opcache \
-    && docker-php-source delete
+RUN docker-php-source extract && \
+    docker-php-ext-configure intl --with-icu-dir=/usr/local && \
+    docker-php-ext-install intl pdo pdo_mysql zip bcmath && \
+    docker-php-ext-enable opcache && \
+    docker-php-source delete
 
-RUN pecl install apcu-5.1.8 \
-    && docker-php-ext-enable apcu
+RUN pecl install apcu-5.1.8 && \
+    docker-php-ext-enable apcu
 
 # Install Composer
 RUN php -r "readfile('https://getcomposer.org/installer');" | php -- --install-dir=/usr/local/bin --filename=composer && chmod +x /usr/local/bin/composer
@@ -48,25 +47,35 @@ RUN php -r "readfile('https://getcomposer.org/installer');" | php -- --install-d
 COPY ./php.ini /usr/local/etc/php/
 COPY ./php-cli.ini /usr/local/etc/php/
 
-# Download, extract and remove BLAST archive
+# Install BLAST
 ENV BLAST_VERSION=2.7.0+
 RUN cd /opt && \
 	wget ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/ncbi-blast-${BLAST_VERSION}-x64-linux.tar.gz && \
-    tar zxvpf ncbi-blast-${BLAST_VERSION}-x64-linux.tar.gz && \
+    tar -zxvpf ncbi-blast-${BLAST_VERSION}-x64-linux.tar.gz && \
     rm ncbi-blast-${BLAST_VERSION}-x64-linux.tar.gz
-
-# Set environment variables for BLAST
 ENV PATH=$PATH:/opt/ncbi-blast-${BLAST_VERSION}/bin
+
+# Install MAFFT
+ENV MAFFT_VERSION=7.310
+RUN cd /opt && \
+    wget https://mafft.cbrc.jp/alignment/software/mafft-${MAFFT_VERSION}-without-extensions-src.tgz && \
+    tar -xvzf mafft-${MAFFT_VERSION}-without-extensions-src.tgz && \
+    rm mafft-${MAFFT_VERSION}-without-extensions-src.tgz && \
+    cd mafft-${MAFFT_VERSION}-without-extensions/core && \
+    make clean && \
+    make && \
+    make install
+ENV PATH=$PATH:/opt/mafft-${MAFFT_VERSION}-without-extensions/core/mafft
 
 # Define the working directory
 WORKDIR /var/www/html
 
 # Download the Gryc source code
 ENV GRYC_VERSION=2017.10.10-dev
-RUN curl -o gryc.tar.gz -fSL "https://github.com/mpiot/gryc/archive/${GRYC_VERSION}.tar.gz"; \
-	tar -xzf gryc.tar.gz -C /var/www/html --strip 1; \
-	rm gryc.tar.gz; \
-	rm .gitignore .php_cs.dist phpunit.xml.dist README.md web/config.php web/app_dev.php; \
+RUN curl -o gryc.tar.gz -fSL "https://github.com/mpiot/gryc/archive/${GRYC_VERSION}.tar.gz" && \
+	tar -xzf gryc.tar.gz -C /var/www/html --strip 1 && \
+	rm gryc.tar.gz && \
+	rm .gitignore .php_cs.dist phpunit.xml.dist README.md web/config.php web/app_dev.php && \
 	chown -R www-data:www-data /var/www/html
 
 # Compile assets
