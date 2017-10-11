@@ -1,20 +1,12 @@
 FROM php:7.1.10-fpm
 
-# Add repositories
-RUN apt-get update; \
-    apt-get install -y apt-transport-https; \
-    curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -; \
-    echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list; \
-    curl -sL https://deb.nodesource.com/setup_8.x | bash -;
-
 # Install wget, git, supervisor, yarn and libraries needed by php extensions
-RUN apt-get install -y \
+RUN apt-get update && \
+    apt-get install -y \
             zlib1g-dev \
             wget \
             git \
             supervisor \
-            nodejs \
-            yarn \
     ; \
     rm -rf /var/lib/apt/lists/*
 
@@ -77,12 +69,6 @@ RUN curl -o gryc.tar.gz -fSL "https://github.com/mpiot/gryc/archive/${GRYC_VERSI
 	rm gryc.tar.gz && \
 	rm .gitignore .php_cs.dist phpunit.xml.dist README.md web/config.php web/app_dev.php && \
 	chown -R www-data:www-data /var/www/html
-
-# Compile assets
-RUN yarn install; \
-    yarn prod; \
-    rm -R node_modules/; \
-    apt-get autoremove -y --purge nodejs yarn;
 
 # Install app dependencies
 RUN composer install --no-suggest --optimize-autoloader
