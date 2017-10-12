@@ -63,7 +63,7 @@ ENV PATH=$PATH:/opt/mafft-${MAFFT_VERSION}-without-extensions/core/mafft
 WORKDIR /var/www/html
 
 # Download the Gryc source code
-ENV GRYC_VERSION=2017.10.10-dev
+ENV GRYC_VERSION=2017.10.12-dev
 RUN curl -o gryc.tar.gz -fSL "https://github.com/mpiot/gryc/archive/${GRYC_VERSION}.tar.gz" && \
 	tar -xzf gryc.tar.gz -C /var/www/html --strip 1 && \
 	rm gryc.tar.gz && \
