@@ -4,15 +4,7 @@ If you are in production mode, use docker-compose by specifying the compose file
 and use docker-compose.prod.yml. To do it use a command like `docker-compose -f docker-compose.yml -f docker-compose.prod.yml build|create|up -d|start`.
 Else, use docker-compose normally (whithout specifying the conf file, docker automatically load both files).
 
-In production, all is set in the .env file, because the source code of the application is in an image,
-an entrypoint edit the configuration and set the credentials, the same credentials are used in docker-compose
-to create containers.
-
-In development, you need to watch the docker-compose.override.yml, as you can see, we specify some volumes:
-config files (to edit it on the fly), a volume for the source code of gryc (permit you to work on the code),
-more opened ports to debug, and es-head to see the Elasticsearch Index.
-
-## List of Environment variables used by the app
+## 1. List of Environment variables used by the app
 
 1. DATABASE_URL
 
@@ -47,10 +39,9 @@ more opened ports to debug, and es-head to see the Elasticsearch Index.
 
     Used for clear and warmup the cache.
 
-## Before install
+## 2. Before install
 
-### In Dev and Prod
-#### 1. Configure Elasticsearch on Server
+### 2.1. Configure Elasticsearch on Server
 In this Docker configuration, we used Elasticsearch, but it need we set a variable in stsctl.conf, else it doesn't work.
 
 The vm_map_max_count setting should be set permanently in /etc/sysctl.conf:
@@ -60,67 +51,98 @@ The vm_map_max_count setting should be set permanently in /etc/sysctl.conf:
     
 To apply the setting on a live system type: `sysctl -w vm.max_map_count=262144`
 
-#### 2. Set database schema
+## 3. How to install
+
+1. Clone the repository
+
+        cd /var/www
+        git clone https://github.com/mpiot/gryc-docker.git gryc
+
+Assuming that the files are in a folder called **gryc**, and you have read the introduction to correctly define the docker-compose files.
+
+2. Build images
+
+        docker-compose -f docker-compose.yml -f docker-compose.prod.yml build
+
+3. Create containers
+
+        docker-compose -f docker-compose.yml -f docker-compose.prod.yml create
+    
+4. Start new containers and reconstruct the gryc_app_src
+
+        docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+
+5. Configure your nginx (used at reverse proxy)
+
+        vi /etc/nginx/nginx.conf
+
+    In this file, add the following lines:
+    
+        server {
+            listen       80;
+            server_name  gryc.test;
+            
+            location / {
+                if (-f /var/www/gryc/maintenance-on.html) {
+                return 503;
+            }
+            
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_pass http://localhost:8080;
+            }
+            
+            error_page 503 @maintenance;
+            location @maintenance {
+                root /var/www/gryc/;
+                rewrite ^(.*)$ /maintenance-on.html break;
+            }
+        }
+
+    In this file:
+    - the website url is gryc.test
+    - the nginx docker container listen on 8080 (proxy_pass http://localhost:8080;)
+
+## 4. After install
+
+### 4.1. In Dev and Prod
+
+#### 4.1.1. Set database schema
 The project use a SQL database, then you must init it:
 
     $ bin/console doctrine:schema:update --force
 
-#### 3. Init the Elasticsearch database
+#### 4.1.2. Init the Elasticsearch database
 The same thing for Elasticsearch:
 
     $ bin/console fos:elastica:populate
 
-### In Dev only
+### 4.2. In Dev only
 You need to set the access rights for var/ and files/, because the app write in this folders, set the ACL like this:
 
     # setfacl -dR -m u:33:rwX -m u:YOUR_USERNAME:rwX var/ files/
     # setfacl -R -m u:33:rwX -m u:YOUR_USERNAME:rwX var/ files/
 
-## How to install
+## 5. How to update
 
-Assuming that the files are in a folder called **gryc**, and you have read the introduction to correctly define the docker-compose files.
+If you have followed the installation procedure, you just have to use the update.sh bash script.
 
-1. Build images
+## 6. How to backup ?
 
-        docker-compose -f docker-compose.yml -f docker-compose.prod.yml build
+Use the backup.sh script to perform a database and appData backup.
 
-2. Create containers
+## 7. How to dump and restore the database
 
-        docker-compose -f docker-compose.yml -f docker-compose.prod.yml create
-    
-6. Start new containers and reconstruct the gryc_app_src
+To dump the database:
 
-        docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+    docker exec CONTAINER /usr/bin/mysqldump -u root --password=root DATABASE > backup.sql
 
-## How to update
+To restaure the database:
 
-Assuming that you followed the installation above.
+    cat backup.sql | docker exec -i CONTAINER /usr/bin/mysql -u root --password=root DATABASE
 
-1. Build new images
-
-        docker-compose -f docker-compose.yml -f docker-compose.prod.yml build
-
-2. Stop containers
-
-        docker-compose -f docker-compose.yml -f docker-compose.prod.yml stop
-
-3. Delete app and nginx containers
-
-        docker rm gryc-nginx gryc-app
-
-7. Delete gryc_app_src volume
-
-        docker volume rm gryc_app_src
-
-5. Create new containers
-
-        docker-compose -f docker-compose.yml -f docker-compose.prod.yml create
-
-6. Start new containers and reconstruct the gryc_app_src
-
-        docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
-
-## How to install xDebug
+## 8. How to install xDebug
 
 1. Enter in the container
 
@@ -133,13 +155,3 @@ Assuming that you followed the installation above.
 3. Restart the container
 
         docker-compose -f docker-compose.yml -f docker-compose.prod.yml restart
-
-## How to dump and restore the database
-
-To dump the database:
-
-    docker exec CONTAINER /usr/bin/mysqldump -u root --password=root DATABASE > backup.sql
-
-To restaure the database:
-
-    cat backup.sql | docker exec -i CONTAINER /usr/bin/mysql -u root --password=root DATABASE
