@@ -5,9 +5,11 @@
 backupFolder='backup';
 dbBackupFolder="$backupFolder/db";
 appDataBackupFolder="$backupFolder/appData";
+appLogsBackupFolder="$backupFolder/appLogs";
 
 # Colors
 GREEN='\033[0;32m';
+LIGHT_BLUE='\033[1;34m';
 NC='\033[0m'; # No Color
 
 # How many file keep ?
@@ -21,7 +23,8 @@ echo '########################';
 echo -e "\nParameters:";
 echo "Backup folder: $backupFolder";
 echo "Database backup folder: $dbBackupFolder";
-echo -e "AppData backup folder: $appDataBackupFolder\n";
+echo -e "App data backup folder: $appDataBackupFolder";
+echo -e "App logs backup folder: $appLogsBackupFolder\n";
 
 # Exit script if a command fail
 set -e
@@ -51,17 +54,33 @@ if [ ! -d $appDataBackupFolder ]; then
   echo -e "The folder $appDataBackupFolder have been created\n";
 fi
 
-# Execute the appData backup
+# Execute the app data backup
 echo "App files backup...";
-docker run --rm --volumes-from gryc-app -v $(pwd)/$appDataBackupFolder:/backup debian tar zcf /backup/$filename.tar.gz /var/www/html/files
+docker run --rm --volumes-from gryc-app -v $(pwd)/$appDataBackupFolder:/backup debian tar -zcf /backup/$filename.tar.gz -C /var/www/html/files .
 echo -e "App files backup: ${GREEN}done${NC}";
 echo -e "The file $filename.tar have been created in $appDataBackupFolder\n"
+
+# Check if the backup folder exists
+if [ ! -d $appLogsBackupFolder ]; then
+  mkdir -p $appLogsBackupFolder;
+  echo -e "The folder $appLogsBackupFolder have been created\n";
+fi
+
+# Execute app logs backup
+echo "App logs backup...";
+docker run --rm --volumes-from gryc-app -v $(pwd)/$appLogsBackupFolder:/backup debian tar -zcf /backup/$filename.tar.gz  -C /var/www/html/var/logs .
+echo -e "App logs backup: ${GREEN}done${NC}";
+echo -e "The file $filename.tar have been created in $appLogsBackupFolder\n"
 
 # Clean backup folder
 echo "Clean backup folder...";
 ls -tpd -1 $PWD/$dbBackupFolder/** | grep -v '/$' | tail -n +$((nbKeepedFiles+1)) | xargs -d '\n' -r rm --
+echo -e "Clean db backups: ${LIGHT_BLUE}done${NC}";
 ls -tpd -1 $PWD/$appDataBackupFolder/** | grep -v '/$' | tail -n +$((nbKeepedFiles+1)) | xargs -d '\n' -r rm --
+echo -e "Clean app data backups: ${LIGHT_BLUE}done${NC}";
+ls -tpd -1 $PWD/$appLogsBackupFolder/** | grep -v '/$' | tail -n +$((nbKeepedFiles+1)) | xargs -d '\n' -r rm --
+echo -e "Clean app logs backups: ${LIGHT_BLUE}done${NC}";
 echo -e "Clean backup folder: ${GREEN}done${NC}\n";
 
 # Final message
-echo -e "${GREEN}The backup is successfully completed";
+echo -e "${GREEN}The backup is successfully completed${NC}";
