@@ -49,7 +49,13 @@ docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 echo -e "Up containers: ${GREEN}done${NC}\n";
 
 # Wait all containers are correctly started
-sleep 20;
+echo -e "Wait for all containers completly started...\n";
+secs=$((20))
+while [ $secs -gt 0 ]; do
+   echo -ne "$secs\033[0K\r"
+   sleep 1
+   : $((secs--))
+done
 
 # Hide the maintenance page
 echo "Hide maintenance page...";
