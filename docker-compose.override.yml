@@ -2,9 +2,9 @@ version: '2'
 
 services:
     nginx:
+        build: ./docker/nginx/dev
         volumes:
-            - ./docker/nginx/vhost/default.conf:/etc/nginx/conf.d/default.conf:ro
-            - ./docker/nginx/config/nginx.conf:/etc/nginx/nginx.conf:ro
+            - ./docker/nginx/dev/nginx.conf:/etc/nginx/nginx.conf:ro
             - ../gryc:/var/www/html
 
     app:

@@ -3,9 +3,7 @@ version: '2'
 services:
     nginx:
         restart: always
-        build:
-            context: ./docker/nginx
-            dockerfile: Dockerfile-prod
+        build: ./docker/nginx/prod
         volumes:
             - app_src:/var/www/html
 
