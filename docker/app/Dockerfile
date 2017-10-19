@@ -40,7 +40,7 @@ COPY ./php.ini /usr/local/etc/php/
 COPY ./php-cli.ini /usr/local/etc/php/
 
 # Install BLAST
-ENV BLAST_VERSION=2.7.0+
+ENV BLAST_VERSION=2.6.0+
 RUN cd /opt && \
 	wget ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/ncbi-blast-${BLAST_VERSION}-x64-linux.tar.gz && \
     tar -zxvpf ncbi-blast-${BLAST_VERSION}-x64-linux.tar.gz && \
