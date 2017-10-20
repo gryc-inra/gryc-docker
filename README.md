@@ -72,46 +72,46 @@ Assuming that the files are in a folder called **gryc**, and you have read the i
 
         docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 
-5. Configure your haproxy (used as reverse proxy)
+5. Configure your nginx (used as reverse proxy)
 
-        vi /etc/haproxy/haproxy.cfg
+        vi /etc/nginx/site-available/gryc
 
     In this file, add the following lines:
-    
-        # Frontend for http/1.1 request (port 80)
-        frontend http-in
-            bind 0.0.0.0:80
-            mode http
-        
-            acl ssl ssl_fc
-            acl gryc hdr(host) -i gryc.dev
-        
-            redirect scheme https code 302 if !ssl gryc
-        
-        # Frontend for http/2 and http/1.1 over SSL (port 443)
-        frontend https-in
-            bind 0.0.0.0:443 ssl crt /etc/haproxy/certs/gryc.pem alpn h2,http/1.1
-            mode tcp
-        
-            acl gryc ssl_fc_sni -i gryc.dev
-            acl http2 ssl_fc_alpn -i h2
-        
-            use_backend gryc-http2 if gryc http2 
-            use_backend gryc-http2-fallback if gryc
-        
-        # Point to gryc-nginx docker port used for http/2
-        backend gryc-http2
-            mode tcp
-            server sv1 127.0.0.1:8081 check send-proxy
-        
-        # Point to gryc-nginx docker port user for http/1.1
-        backend gryc-http2-fallback
-            mode tcp
-            server sv1 127.0.0.1:8082 check send-proxy
+
+        server { 
+            listen       443 ssl http2; 
+            server_name  gryc.dev; 
+         
+            ssl_certificate /etc/nginx/ssl/gryc.crt; 
+            ssl_certificate_key /etc/nginx/ssl/gryc.key; 
+         
+            location / { 
+                if (-f /var/www/html/maintenance-on.html) { 
+                    return 503; 
+                 } 
+         
+                 proxy_set_header Host $host; 
+                 proxy_set_header X-Real-IP $remote_addr; 
+                 proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; 
+                 proxy_pass http://127.0.0.1:8080; 
+            } 
+         
+            error_page 503 @maintenance; 
+            location @maintenance { 
+                root /var/www/html; 
+                rewrite ^(.*)$ /maintenance-on.html break; 
+            } 
+        }
 
     In this file:
-    - the website url is gryc.test
-    - the nginx docker container listen on 8081 and 8082 (server sv1 127.0.0.1:8081|8082)
+    - we use http2 and ssl
+    - the website url is gryc.dev
+    - the nginx docker container listen on 8080
+
+6. Enable the host and restart nginx
+
+        ln -s /etc/nginx/site-available/gryc /etc/nginx/site-enable/gryc
+        systemctl reload nginx
 
 ## 4. After install
 
