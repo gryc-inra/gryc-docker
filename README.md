@@ -72,37 +72,46 @@ Assuming that the files are in a folder called **gryc**, and you have read the i
 
         docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 
-5. Configure your nginx (used at reverse proxy)
+5. Configure your haproxy (used as reverse proxy)
 
-        vi /etc/nginx/nginx.conf
+        vi /etc/haproxy/haproxy.cfg
 
     In this file, add the following lines:
     
-        server {
-            listen       80;
-            server_name  gryc.test;
-            
-            location / {
-                if (-f /var/www/gryc/maintenance-on.html) {
-                return 503;
-            }
-            
-            proxy_set_header Host $host;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_pass http://localhost:8080;
-            }
-            
-            error_page 503 @maintenance;
-            location @maintenance {
-                root /var/www/gryc/;
-                rewrite ^(.*)$ /maintenance-on.html break;
-            }
-        }
+        # Frontend for http/1.1 request (port 80)
+        frontend http-in
+            bind 0.0.0.0:80
+            mode http
+        
+            acl ssl ssl_fc
+            acl gryc hdr(host) -i gryc.dev
+        
+            redirect scheme https code 302 if !ssl gryc
+        
+        # Frontend for http/2 and http/1.1 over SSL (port 443)
+        frontend https-in
+            bind 0.0.0.0:443 ssl crt /etc/haproxy/certs/gryc.pem alpn h2,http/1.1
+            mode tcp
+        
+            acl gryc ssl_fc_sni -i gryc.dev
+            acl http2 ssl_fc_alpn -i h2
+        
+            use_backend gryc-http2 if gryc http2 
+            use_backend gryc-http2-fallback if gryc
+        
+        # Point to gryc-nginx docker port used for http/2
+        backend gryc-http2
+            mode tcp
+            server sv1 127.0.0.1:8081 check send-proxy
+        
+        # Point to gryc-nginx docker port user for http/1.1
+        backend gryc-http2-fallback
+            mode tcp
+            server sv1 127.0.0.1:8082 check send-proxy
 
     In this file:
     - the website url is gryc.test
-    - the nginx docker container listen on 8080 (proxy_pass http://localhost:8080;)
+    - the nginx docker container listen on 8081 and 8082 (server sv1 127.0.0.1:8081|8082)
 
 ## 4. After install
 
