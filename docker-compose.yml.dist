@@ -1,4 +1,4 @@
-version: '2'
+version: '3'
 
 services:
     nginx:
@@ -66,12 +66,6 @@ services:
             memlock:
                 soft: -1
                 hard: -1
-            nofile:
-                soft: 65536
-                hard: 65536
-        mem_limit: 1g
-        cap_add:
-            - IPC_LOCK
         volumes:
             - es1_data:/usr/share/elasticsearch/data
         networks:
@@ -89,12 +83,6 @@ services:
             memlock:
                 soft: -1
                 hard: -1
-            nofile:
-                soft: 65536
-                hard: 65536
-        mem_limit: 1g
-        cap_add:
-            - IPC_LOCK
         volumes:
             - es2_data:/usr/share/elasticsearch/data
         networks:
