@@ -72,36 +72,72 @@ Assuming that the files are in a folder called **gryc**, and you have read the i
 
         docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 
-5. Configure your nginx (used as reverse proxy)
+5. Configure your reverse proxy
 
         vi /etc/nginx/site-available/gryc
 
     In this file, add the following lines:
 
-        server { 
-            listen       443 ssl http2; 
-            server_name  gryc.dev; 
-         
-            ssl_certificate /etc/nginx/ssl/gryc.crt; 
-            ssl_certificate_key /etc/nginx/ssl/gryc.key; 
-         
-            location / { 
-                if (-f /var/www/html/maintenance-on.html) { 
-                    return 503; 
-                 } 
-         
-                 proxy_set_header Host $host; 
-                 proxy_set_header X-Real-IP $remote_addr; 
-                 proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; 
-                 proxy_pass http://127.0.0.1:8080; 
-            } 
-         
-            error_page 503 @maintenance; 
-            location @maintenance { 
-                root /var/www/html; 
-                rewrite ^(.*)$ /maintenance-on.html break; 
-            } 
+
+    # HTTP/1.1 connexion (redirect on https)
+    server {
+        listen      80;
+        server_name gryc.dev;
+    
+        # Redirect the http flux to https (301: Permanent redirection)
+        return 301 https://gryc.dev$request_uri;
+    }
+    
+    # HTTP/2 or HTTP/1.1 over SSL connexion
+    server {
+        listen      443 ssl http2;
+        server_name gryc.dev;
+    
+        # SSL configuration
+        ssl_certificate     /etc/nginx/ssl/gryc.crt;
+        ssl_certificate_key /etc/nginx/ssl/gryc.key;
+
+        # SSL optimizations
+
+        # Session Caching
+        ssl_session_cache shared:SSL:20m;
+        ssl_session_timeout 4h;
+
+        # Session Tickets and IDs
+        ssl_session_tickets on;
+
+        # Secure
+        add_header X-Frame-Options DENY;
+        add_header X-Content-Type-Options nosniff;
+        add_header X-XSS-Protection "1; mode=block";
+
+        # Block WordPress Pingback DDoS attacks
+        #if ($http_user_agent ~* "WordPress") {
+        #  return 403;
+        #}
+
+        location / {
+            # Test exixtance of a page, if exist: return 503 error
+            if (-f /home/mpiot/Development/gryc-docker/maintenance-on.html) {
+                return 503;
+            }
+    
+            # Set the reverse proxy, to redirect http request to the Docker server
+            proxy_pass          http://127.0.0.1:8080;
+            proxy_set_header    Host                $host;
+            proxy_set_header    X-Real-IP           $remote_addr;
+            proxy_set_header    X-Forwarded-For     $proxy_add_x_forwarded_for;
+            proxy_set_header    X-Forwarded-SSL     on;
+            proxy_set_header    X-Forwarded-Proto   $scheme;
         }
+    
+        # Set the 503 code: Service Unavailable (Service temporarily unavailable or in maintenance.)
+        error_page 503 @maintenance;
+        location @maintenance {
+            root    /home/mpiot/Development/gryc-docker;
+            rewrite ^(.*)$ /maintenance-on.html break;
+        }
+    }
 
     In this file:
     - we use http2 and ssl

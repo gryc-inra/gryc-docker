@@ -1,3 +1,4 @@
 FROM nginx:1.13.5
 
-COPY ./nginx.conf /etc/nginx/
+RUN rm /etc/nginx/conf.d/default.conf
+COPY ./gryc.conf /etc/nginx/conf.d/
