@@ -11,6 +11,7 @@ services:
         restart: always
         environment:
             - SYMFONY_ENV=prod
+            - SYMFONY_DEBUG=0
         volumes:
             - app_src:/var/www/html
             - app_data:/var/www/html/files

@@ -10,6 +10,7 @@ services:
     app:
         environment:
             - SYMFONY_ENV=dev
+            - SYMFONY_DEBUG=1
         volumes:
             - ./docker/app/php.ini:/usr/local/etc/php/php.ini:ro
             - ./docker/app/php-cli.ini:/usr/local/etc/php/php-cli.ini:ro
