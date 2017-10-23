@@ -11,6 +11,8 @@ services:
         environment:
             - SYMFONY_ENV=dev
         volumes:
+            - ./docker/app/php.ini:/usr/local/etc/php/php.ini:ro
+            - ./docker/app/php-cli.ini:/usr/local/etc/php/php-cli.ini:ro
             - ../gryc:/var/www/html
 
     db:
