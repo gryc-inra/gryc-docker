@@ -23,13 +23,16 @@ services:
     es1:
         ports:
             - 127.0.0.1:9200:9200
-            - 127.0.0.1:9300:9300
         volumes:
             - ./docker/elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
 
     es2:
         volumes:
             - ./docker/elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
+
+    rabbitmq:
+        ports:
+            - 127.0.0.1:15672:15672
 
     es-head:
         container_name: gryc-es-head
@@ -38,7 +41,3 @@ services:
             - 127.0.0.1:9100:9100
         networks:
             - default
-
-    rabbitmq:
-        ports:
-            - 127.0.0.1:15672:15672

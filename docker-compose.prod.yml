@@ -17,9 +17,6 @@ services:
             - app_data:/var/www/html/files
             - app_var:/var/www/html/var
 
-    rabbitmq:
-        restart: always
-
     db:
         restart: always
 
@@ -27,6 +24,9 @@ services:
         restart: always
 
     es2:
+        restart: always
+
+    rabbitmq:
         restart: always
 
 volumes:
