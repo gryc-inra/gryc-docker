@@ -1,2 +1,4 @@
-docker-compose.yml
 /backup
+docker/app.env
+docker/db.env
+docker/rabbitmq.env

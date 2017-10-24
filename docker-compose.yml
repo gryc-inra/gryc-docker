@@ -13,16 +13,8 @@ services:
     app:
         container_name: gryc-app
         build: ./docker/app
-        environment:
-            - DATABASE_URL=mysql://gryc:gryc@db:3306/gryc
-            - ELASTICSEARCH_URL=http://es1:9200
-            - RABBITMQ_URL=amqp://gryc:gryc@rabbitmq:5672/gryc?lazy=1&connection_timeout=3&read_write_timeout=3
-            - MAILER_URL=smtp://login:password@host:587?encryption=tls&auth_mode=login
-            - MAILER_SENDER_ADDRESS=me@myhost.tld
-            - MAILER_SENDER_NAME=My site name
-            - SYMFONY_SECRET=ThisTokenIsNotSoSecretChangeIt
-            - RECAPTCHA_PUBLIC_KEY=ReplaceWithYourOwnReCaptchaPublicKeyForInvisibleCatcha
-            - RECAPTCHA_PRIVATE_KEY=ReplaceWithYourOwnReCaptchaPrivateKeyForInvisibleCatcha
+        env_file:
+            - ./docker/app.env
         depends_on:
             - rabbitmq
             - db
@@ -33,10 +25,8 @@ services:
     rabbitmq:
         container_name: gryc-rabbitmq
         image: rabbitmq:3.6.12-management
-        environment:
-            - RABBITMQ_DEFAULT_VHOST=gryc
-            - RABBITMQ_DEFAULT_USER=gryc
-            - RABBITMQ_DEFAULT_PASS=gryc
+        env_file:
+            - ./docker/rabbitmq.env
         volumes:
             - rabbitmq_data:/var/lib/rabbitmq
         networks:
@@ -45,11 +35,8 @@ services:
     db:
         container_name: gryc-db
         image: mariadb:10.3.2
-        environment:
-            - MYSQL_ROOT_PASSWORD=gryc
-            - MYSQL_USER=gryc
-            - MYSQL_PASSWORD=gryc
-            - MYSQL_DATABASE=gryc
+        env_file:
+            - ./docker/db.env
         volumes:
             - db_data:/var/lib/mysql
         networks:

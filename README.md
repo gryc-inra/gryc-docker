@@ -6,6 +6,11 @@ Else, use docker-compose normally (whithout specifying the conf file, docker aut
 
 ## 1. List of Environment variables used by the app
 
+You can set all informations: login, passwords, api key, etc... In the .env files in the folder docker.
+You may copy all *.env.dist to *.env, and edit the new files.
+
+### app.env
+
 1. DATABASE_URL
 
     This is the URL to connect the application to the MYSQL database (eg: mysql://login:password@host:port/databaseName)
@@ -35,9 +40,37 @@ Else, use docker-compose normally (whithout specifying the conf file, docker aut
     This token are used to protect the forms in the app.
     You can have it on https://www.google.com/recaptcha, and get an 'Invisible reCAPTCHA'
 
-8. SYMFONY_ENV
+### db.env
 
-    Used for clear and warmup the cache.
+1. MYSQL_ROOT_PASSWORD
+
+    Set the root password of the mariadb server
+
+2. MYSQL_USER
+
+    Set the user used by the app (you need use the same in the .env above: DATABASE_URL)
+
+3. MYSQL_PASSWORD
+
+    Set the password used by the app (you need use the same in the .env above: DATABASE_URL)
+
+4. MYSQL_DATABASE
+
+    Set the database name used by the app (you need use the same in the .env above: DATABASE_URL)
+
+### rabbitmq.env
+
+1. RABBITMQ_DEFAULT_VHOST
+
+    Set the RabbitMq Vhost (you need use the same in the .env above: RABBITMQ_URL)
+
+2. RABBITMQ_DEFAULT_USER
+
+    Set the RabbitMq user (you need use the same in the .env above: RABBITMQ_URL)
+
+3. RABBITMQ_DEFAULT_PASS
+
+    Set the RabbitMq password (you need use the same in the .env above: RABBITMQ_URL)
 
 ## 2. Before install
 
