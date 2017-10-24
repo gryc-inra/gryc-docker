@@ -6,16 +6,15 @@ RUN apt-get update && \
             zlib1g-dev \
             wget \
             git \
-            supervisor \
-    ; \
+            supervisor && \
     rm -rf /var/lib/apt/lists/*
 
 # Compile ICU (required by intl php extension)
-RUN curl -sS -o /tmp/icu.tar.gz -L http://download.icu-project.org/files/icu4c/59.1/icu4c-59_1-src.tgz; \
-    tar -zxf /tmp/icu.tar.gz -C /tmp; \
-    cd /tmp/icu/source; \
-    ./configure --prefix=/usr/local; \
-    make; \
+RUN curl -sS -o /tmp/icu.tar.gz -L http://download.icu-project.org/files/icu4c/59.1/icu4c-59_1-src.tgz && \
+    tar -zxf /tmp/icu.tar.gz -C /tmp && \
+    cd /tmp/icu/source && \
+    ./configure --prefix=/usr/local && \
+    make && \
     make install
 
 # To avoid a bug with the intl extension compilation
@@ -72,7 +71,8 @@ RUN curl -o gryc.tar.gz -fSL "https://github.com/mpiot/gryc/archive/${GRYC_VERSI
 
 # Install app dependencies
 RUN composer install --no-suggest --optimize-autoloader
-RUN chown -R www-data:www-data . && chmod -R 777 var/cache var/logs
+RUN chown -R www-data:www-data . && \
+    chmod -R 777 var/cache var/logs
 
 # Copy script and supervisor conf
 COPY ./init.sh /opt/app/init.sh
