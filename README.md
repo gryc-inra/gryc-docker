@@ -1,13 +1,17 @@
 # Docker configuration for GRYC
 
-If you are in production mode, use docker-compose by specifying the compose file to avoid the usage of the docker-compose.override.yml file
-and use docker-compose.prod.yml. To do it use a command like `docker-compose -f docker-compose.yml -f docker-compose.prod.yml build|create|up -d|start`.
-Else, use docker-compose normally (whithout specifying the conf file, docker automatically load both files).
+The project contain 3 docker-compose files:
+- docker-compose.yml (used in prod and dev)
+- docker-compose.override.yml (used in dev)
+- docker-compose.prod.yml (used in prod)
+
+When you are in dev, you just use the command `docker-compose build|create|up|start...`, docker-compose automatically use *docker-compose.yml* and *docker-compose.override.yml*.
+But in production, you need manually define the files with `-f`: `docker-compose -f docker-compose.yml -f docker-compose.prod.yml build|create|up|start...`
 
 ## 1. List of Environment variables used by the app
 
 You can set all informations: login, passwords, api key, etc... In the .env files in the folder docker.
-You may copy all *.env.dist to *.env, and edit the new files.
+You may copy all *\*.env.dist* to *\*.env*, and edit the new files.
 
 ### app.env
 
@@ -84,6 +88,13 @@ The vm_map_max_count setting should be set permanently in /etc/sysctl.conf:
     
 To apply the setting on a live system type: `sysctl -w vm.max_map_count=262144`
 
+### 2.2. Copy .env files and fill them
+
+    cd docker
+    cp app.env.dist app.env && cp db.env.dist db.env && cp rabbitmq.env.dist rabbitmq.env
+
+Then, edit the .env files and fill them with your data (see **1. List of Environment variables used by the app**)
+
 ## 3. How to install
 
 1. Clone the repository
@@ -91,21 +102,17 @@ To apply the setting on a live system type: `sysctl -w vm.max_map_count=262144`
         cd /var/www
         git clone https://github.com/mpiot/gryc-docker.git gryc
 
-Assuming that the files are in a folder called **gryc**, and you have read the introduction to correctly define the docker-compose files.
+The next points assume that the files are in the folder called **/var/www/gryc**.
 
 2. Build images
 
         docker-compose -f docker-compose.yml -f docker-compose.prod.yml build
-
-3. Create containers
-
-        docker-compose -f docker-compose.yml -f docker-compose.prod.yml create
     
-4. Start new containers and reconstruct the gryc_app_src
+3. Start new containers and construct network and volumes
 
         docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 
-5. Configure your reverse proxy
+4. Configure your reverse proxy
 
         vi /etc/nginx/site-available/gryc
 
@@ -176,7 +183,7 @@ Assuming that the files are in a folder called **gryc**, and you have read the i
     - the website url is gryc.dev
     - the nginx docker container listen on 8080
 
-6. Enable the host and restart nginx
+5. Enable the host and restart nginx
 
         ln -s /etc/nginx/site-available/gryc /etc/nginx/site-enable/gryc
         systemctl reload nginx
@@ -188,12 +195,12 @@ Assuming that the files are in a folder called **gryc**, and you have read the i
 #### 4.1.1. Set database schema
 The project use a SQL database, then you must init it:
 
-    $ bin/console doctrine:schema:update --force
+    docker exec -it gryc-app bin/console doctrine:schema:update --force
 
 #### 4.1.2. Init the Elasticsearch database
 The same thing for Elasticsearch:
 
-    $ bin/console fos:elastica:populate
+    docker exec -it gryc-app bin/console fos:elastica:populate
 
 ### 4.2. In Dev only
 You need to set the access rights for var/ and files/, because the app write in this folders, set the ACL like this:
@@ -203,11 +210,11 @@ You need to set the access rights for var/ and files/, because the app write in 
 
 ## 5. How to update
 
-If you have followed the installation procedure, you just have to use the update.sh bash script.
+If you have followed the installation procedure, you just have to use the update.sh bash script as root: `./update.sh`
 
 ## 6. How to backup ?
 
-Use the backup.sh script to perform a database and appData backup.
+Use the backup.sh script asroot to perform a database, appData, and appLogs: `./backup.sh`
 
 ## 7. How to dump and restore the database
 
@@ -215,7 +222,7 @@ To dump the database:
 
     docker exec CONTAINER /usr/bin/mysqldump -u root --password=root DATABASE > backup.sql
 
-To restaure the database:
+To restore the database:
 
     cat backup.sql | docker exec -i CONTAINER /usr/bin/mysql -u root --password=root DATABASE
 
