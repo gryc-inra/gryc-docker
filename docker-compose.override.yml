@@ -30,10 +30,6 @@ services:
         volumes:
             - ./docker/elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
 
-    rabbitmq:
-        ports:
-            - 127.0.0.1:15672:15672
-
     es-head:
         container_name: gryc-es-head
         image: mobz/elasticsearch-head:5

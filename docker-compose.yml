@@ -67,7 +67,7 @@ services:
 
     rabbitmq:
         container_name: gryc-rabbitmq
-        image: rabbitmq:3.6.12-management
+        image: rabbitmq:3.6.12
         env_file:
             - ./docker/rabbitmq.env
         volumes:
