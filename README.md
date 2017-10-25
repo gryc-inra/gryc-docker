@@ -88,13 +88,6 @@ The vm_map_max_count setting should be set permanently in /etc/sysctl.conf:
     
 To apply the setting on a live system type: `sysctl -w vm.max_map_count=262144`
 
-### 2.2. Copy .env files and fill them
-
-    cd docker
-    cp app.env.dist app.env && cp db.env.dist db.env && cp rabbitmq.env.dist rabbitmq.env
-
-Then, edit the .env files and fill them with your data (see **1. List of Environment variables used by the app**)
-
 ## 3. How to install
 
 1. Clone the repository
@@ -104,15 +97,22 @@ Then, edit the .env files and fill them with your data (see **1. List of Environ
 
 The next points assume that the files are in the folder called **/var/www/gryc**.
 
-2. Build images
+2. Copy .env files and fill them
+
+    cd gryc/docker
+    cp app.env.dist app.env && cp db.env.dist db.env && cp rabbitmq.env.dist rabbitmq.env
+
+Then, edit the .env files and fill them with your data (see **1. List of Environment variables used by the app**)
+
+3. Build images
 
         docker-compose -f docker-compose.yml -f docker-compose.prod.yml build
     
-3. Start new containers and construct network and volumes
+4. Create containers, construct network and volumes, and start created containers 
 
         docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 
-4. Configure your reverse proxy
+5. Configure your reverse proxy
 
         vi /etc/nginx/site-available/gryc
 
@@ -183,7 +183,7 @@ The next points assume that the files are in the folder called **/var/www/gryc**
     - the website url is gryc.dev
     - the nginx docker container listen on 8080
 
-5. Enable the host and restart nginx
+6. Enable the host and restart nginx
 
         ln -s /etc/nginx/site-available/gryc /etc/nginx/site-enable/gryc
         systemctl reload nginx
@@ -220,11 +220,11 @@ Use the backup.sh script asroot to perform a database, appData, and appLogs: `./
 
 To dump the database:
 
-    docker exec CONTAINER /usr/bin/mysqldump -u root --password=root DATABASE > backup.sql
+    docker exec gryc-db /usr/bin/mysqldump -u root --password=ROOT_PASSWORD DATABASE_NAME > backup.sql
 
 To restore the database:
 
-    cat backup.sql | docker exec -i CONTAINER /usr/bin/mysql -u root --password=root DATABASE
+    cat backup.sql | docker exec -i gryc-db /usr/bin/mysql -u root --password=ROOT_PASSWORD DATABASE_NAME
 
 ## 8. How to install xDebug
 
