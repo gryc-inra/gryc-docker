@@ -12,7 +12,7 @@ services:
 
     app:
         container_name: gryc-app
-        build: ./docker/app
+        image: mapiot/gryc:latest
         env_file:
             - ./docker/app.env
         depends_on:
