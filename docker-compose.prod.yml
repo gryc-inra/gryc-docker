@@ -2,13 +2,13 @@ version: '3'
 
 services:
     nginx:
-        restart: always
+        restart: on-failure
         build: ./docker/nginx/prod
         volumes:
             - app_src:/var/www/html
 
     app:
-        restart: always
+        restart: on-failure
         environment:
             - SYMFONY_ENV=prod
             - SYMFONY_DEBUG=0
@@ -18,16 +18,16 @@ services:
             - app_var:/var/www/html/var
 
     db:
-        restart: always
+        restart: on-failure
 
     es1:
-        restart: always
+        restart: on-failure
 
     es2:
-        restart: always
+        restart: on-failure
 
     rabbitmq:
-        restart: always
+        restart: on-failure
 
 volumes:
     app_src:
