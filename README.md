@@ -141,13 +141,9 @@ You need to set the access rights for var/ and files/, because the app write in 
     # setfacl -dR -m u:33:rwX -m u:YOUR_USERNAME:rwX var/ files/
     # setfacl -R -m u:33:rwX -m u:YOUR_USERNAME:rwX var/ files/
 
-## 5. How to update
+## 5. How to update and backup
 
-If you have followed the installation procedure, you just have to use the update.sh bash script as root: `./update.sh`
-
-## 6. How to backup ?
-
-Use the backup.sh script asroot to perform a database, appData, and appLogs: `./backup.sh`
+You can find scripts in mpiot/docker-scripts github project
 
 ## 7. How to dump and restore the database
 
