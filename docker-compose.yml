@@ -70,7 +70,7 @@ services:
 
     rabbitmq:
         container_name: gryc-rabbitmq
-        image: rabbitmq:3.6.12
+        image: rabbitmq:3.7.0
         environment:
           - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
           - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD}
