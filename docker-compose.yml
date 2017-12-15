@@ -72,7 +72,6 @@ services:
         container_name: gryc-rabbitmq
         image: rabbitmq:3.6.12
         environment:
-          - RABBITMQ_DEFAULT_VHOST=${RABBITMQ_VHOST}
           - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
           - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD}
         volumes:
