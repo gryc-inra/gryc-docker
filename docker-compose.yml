@@ -72,10 +72,18 @@ services:
         container_name: gryc-rabbitmq
         image: rabbitmq:3.7.0
         environment:
-          - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
-          - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD}
+            - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
+            - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD}
         volumes:
             - rabbitmq_data:/var/lib/rabbitmq
+        networks:
+            - default
+
+    redis:
+        container_name: gryc-redis
+        image: redis:4.0.6
+        volumes:
+            - redis_data:/data
         networks:
             - default
 
@@ -87,6 +95,8 @@ volumes:
     es1_data:
         driver: local
     es2_data:
+        driver: local
+    redis_data:
         driver: local
 
 networks:
