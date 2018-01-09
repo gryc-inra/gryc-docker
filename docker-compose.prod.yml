@@ -15,6 +15,7 @@ services:
         volumes:
             - app_src:/var/www/html
             - app_data:/var/www/html/files
+            - app_session:/var/www/html/var/sessions
 
     db:
         restart: on-failure
@@ -32,4 +33,6 @@ volumes:
     app_src:
         driver: local
     app_data:
+        driver: local
+    app_session:
         driver: local

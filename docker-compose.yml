@@ -79,14 +79,6 @@ services:
         networks:
             - default
 
-    redis:
-        container_name: gryc-redis
-        image: redis:4.0.6
-        volumes:
-            - redis_data:/data
-        networks:
-            - default
-
 volumes:
     db_data:
         driver: local
@@ -95,8 +87,6 @@ volumes:
     es1_data:
         driver: local
     es2_data:
-        driver: local
-    redis_data:
         driver: local
 
 networks:
