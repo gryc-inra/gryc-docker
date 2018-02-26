@@ -91,15 +91,7 @@ In the .env file you find all variables that permit to configure the server envi
 
         docker exec -it gryc-app bin/console fos:elastica:populate
 
-5. Configure your reverse proxy
-
-    To access the site on your hostname, you need to configure a reverse proxy, that transfert traffic on the container.
-An example of configuration with haproxy is available in the folder *reverse-proxy*.
-Adapt the config, with the real domain name, and the port of the docker container.
-
-    You can restart haproxy whith the command:
-
-        systemctl restart haproxy
+5. Configure your reverse proxy (see 4)
 
 6. Finished
 
@@ -132,6 +124,19 @@ if you haven't change exposed port.
         cd gryc
         setfacl -dR -m u:33:rwX -m u:YOUR_USERNAME:rwX var/ files/
         setfacl -R -m u:33:rwX -m u:YOUR_USERNAME:rwX var/ files/
+
+## 4. How to configure Haproxy
+
+To access the site on your hostname, you need to configure a reverse proxy, that transfert traffic on the container.
+
+An example of configuration with haproxy is available in the folder *reverse-proxy*.
+Adapt the config, with the real domain name, and the port of the docker container.
+
+You can restart haproxy whith the command:
+
+    systemctl restart haproxy
+
+You can access to the HaProxy management page on: http://localhost:9000/haproxy_stats (you can change it in the conf)
 
 ## 4. How to save files (Blast, EMBL, ...)
 
