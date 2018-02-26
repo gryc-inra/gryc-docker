@@ -82,33 +82,16 @@ In the .env file you find all variables that permit to configure the server envi
     Then, edit the `.env` file and fill them with your data. This file has a dual purpose:
      - define vars for contruct Docker containers (like the db passwrod)
      - define vars used in the application (like the db password too)
-
-3. Build images
-
-        docker-compose -f docker-compose.yml -f docker-compose.prod.yml build
     
-4. Create containers, construct network and volumes, and start created containers 
+3. Build images, create containers, construct network and volumes, and start created containers 
 
         docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 
-5. Some commands to make usable containers
- 
-    At this step, if you start for the first time the gryc-app container (first install or update), it will return an error,
-this is because, when we build the image, we dosn't execute some needed scripts (this scripts require the full environment,
-like db, redis, ...) that's why you need to execute some commands in the container.
-
-        docker exec -it gryc-app composer run-script post-install-cmd --no-interaction
-        docker exec -it gryc-app chown -R www-data:www-data /var/www/html
-
-    You also need to create the database schema if it's not exists yet (only when you install the first time!):
- 
-        docker exec -it gryc-app bin/console doctrine:schema:update --force
-
-    Create and populate the Elasticsearch database
+4. Create and populate the Elasticsearch database (may be done manually after containers started)
 
         docker exec -it gryc-app bin/console fos:elastica:populate
 
-6. Configure your reverse proxy
+5. Configure your reverse proxy
 
     To access the site on your hostname, you need to configure a reverse proxy, that transfert traffic on the container.
 An example of configuration with haproxy is available in the folder *reverse-proxy*.
@@ -118,7 +101,7 @@ Adapt the config, with the real domain name, and the port of the docker containe
 
         systemctl restart haproxy
 
-7. Finished
+6. Finished
 
     **Your GRYC instance is ready to use!**
 
@@ -131,11 +114,11 @@ per Docker.
 1. Clone the repository in your workdir folder, or in an other.
 
         cd ~
-        git clone https://github.com/mpiot/gryc-docker.git
+        git clone https://github.com/mpiot/gryc.git
         git clone https://github.com/mpiot/gryc-docker.git
         cd gryc-docker
 
-    Here we clone the gryc-docker and the gryc repositories.
+    Here we clone the gryc and the gryc-docker repositories.
  
     The points 2, 3, 4 are the same as the 2. How to install the prod version, just remove `-f` options in `docker-compose` commands.
 If you want edit some ports config (eg: to access the db), edit it directly in the `docker-composer.override.yml` file.
