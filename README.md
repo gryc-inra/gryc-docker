@@ -164,3 +164,13 @@ To restore the database:
 3. Restart the container
 
         docker-compose restart
+
+## 7. How to update prod version
+
+    docker-compose -f docker-compose.yml -f docker-compose.prod.yml stop
+    docker ps -a
+    docker rm <NGINX CONTAINER> <APP CONTAINER>
+    docker volume ls
+    docker volume rm <APP_SRC VOLUME>
+    docker pull mapiot/gryc:latest 
+    docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
