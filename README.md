@@ -69,7 +69,6 @@ In the .env file you find all variables that permit to configure the server envi
 
 1. Clone the repository in your www folder, or in an other.
 
-        cd /var/www
         git clone https://github.com/mpiot/gryc-docker.git gryc
         cd gryc
 
