@@ -8,6 +8,8 @@ services:
         depends_on:
             - app
         mem_limit: 64M
+        security_opt:
+            - no-new-privileges
         networks:
             - frontend
 
@@ -22,6 +24,8 @@ services:
             - db
             - es1
         mem_limit: 512M
+        security_opt:
+            - no-new-privileges
         networks:
             - frontend
             - backend
@@ -37,6 +41,8 @@ services:
         volumes:
             - db_data:/var/lib/mysql
         mem_limit: 512M
+        security_opt:
+            - no-new-privileges
         networks:
             - backend
 
@@ -54,6 +60,8 @@ services:
         volumes:
             - es1_data:/usr/share/elasticsearch/data
         mem_limit: 1G
+        security_opt:
+            - no-new-privileges
         networks:
             - backend
 
@@ -72,6 +80,8 @@ services:
         volumes:
             - es2_data:/usr/share/elasticsearch/data
         mem_limit: 1G
+        security_opt:
+            - no-new-privileges
         networks:
             - backend
 
@@ -84,6 +94,8 @@ services:
         volumes:
             - rabbitmq_data:/var/lib/rabbitmq
         mem_limit: 128M
+        security_opt:
+            - no-new-privileges
         networks:
             - backend
 
@@ -93,6 +105,8 @@ services:
         volumes:
             - redis_data:/data
         mem_limit: 128M
+        security_opt:
+            - no-new-privileges
         networks:
             - backend
 
