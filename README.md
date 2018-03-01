@@ -127,9 +127,13 @@ if you haven't change exposed port.
  2. Install Yarn
    Follow the procedure: https://yarnpkg.com/lang/en/docs/install/
 
+ 4. Install NodeJs dependencies
+ 
+         yarn install
+ 
  3. Compile assets
  
-     yarn prod|dev|watch
+         yarn prod|dev|watch
 
 ## 4. How to configure Haproxy
 
