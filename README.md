@@ -110,41 +110,54 @@ per Docker.
         cd gryc-docker
 
     Here we clone the gryc and the gryc-docker repositories.
- 
-    The points 2, 3, 4 are the same as the 2. How to install the prod version, just remove `-f` options in `docker-compose` commands.
-If you want edit some ports config (eg: to access the db), edit it directly in the `docker-composer.override.yml` file.
 
-    Follow the point 5 too, then you can configure a reverse proxy if you want too, else access your dev site on 127.0.0.1:8080
-if you haven't change exposed port.
+2. Copy .env files and fill them
 
-    You need to set the access rights for var/ and files/, because the app write in this folders, set the ACL like this
-(do it on your server, no in the docker container):
+        cp .env.dist .env
 
-        cd gryc
-        setfacl -dR -m u:33:rwX -m u:YOUR_USERNAME:rwX var/ files/
-        setfacl -R -m u:33:rwX -m u:YOUR_USERNAME:rwX var/ files/
+    Then, edit the `.env` file and fill them with your data. This file has a dual purpose:
+     - define vars for contruct Docker containers (like the db passwrod)
+     - define vars used in the application (like the db password too)
+    
+3. Build images, create containers, construct network and volumes, and start created containers 
 
- 2. Install Yarn
-   Follow the procedure: https://yarnpkg.com/lang/en/docs/install/
+        docker-compose up -d
 
- 4. Install NodeJs dependencies
- 
-         yarn install
- 
- 3. Compile assets
- 
-         yarn prod|dev|watch
+    > When not files are given to docker-compose, it use docker-compose.yml and docker-compose.override.yml
+
+    > You can edit ports in docker-compose.override.yml
+
+4. In Dev, the container doesn't automatically update the database, then you must do it manually
+
+        docker exec -it gryc-app bin/console doctrine:migrations:migrate
+
+4. Create and populate the Elasticsearch database (may be done manually after containers started)
+
+        docker exec -it gryc-app bin/console fos:elastica:populate
+
+5. In prod the docker image contains compiled assets, but not in git repo. To compile it, use:
+
+        docker run -v /home/mpiot/Development/gryc:/var/www/html -w /var/www/html -i -t node:8 yarn prod
+
+6. Give access rights to the container for var/ and files/ folders
+
+                setfacl -dR -m u:33:rwX -m u:YOUR_USERNAME:rwX var/ files/
+                setfacl -R -m u:33:rwX -m u:YOUR_USERNAME:rwX var/ files/
+
+6. Configure your reverse proxy (see 4)
+
+7. Finished
+
+    **Your GRYC instance is ready to use!**
 
 ## 4. How to configure Haproxy
 
 To access the site on your hostname, you need to configure a reverse proxy, that transfert traffic on the container.
 
 An example of configuration with haproxy is available in the folder *reverse-proxy*.
-Adapt the config, with the real domain name, and the port of the docker container.
+Adapt the config, with the real domain name, and the port of the docker container, you also can remove parts about ssl.
 
-You can restart haproxy whith the command:
-
-    systemctl restart haproxy
+You need to install at least the v1.8 of HaProxy to use http2. (eg: https://haproxy.debian.net/)
 
 You can access to the HaProxy management page on: http://localhost:9000/haproxy_stats (you can change it in the conf)
 
