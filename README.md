@@ -124,6 +124,17 @@ if you haven't change exposed port.
         setfacl -dR -m u:33:rwX -m u:YOUR_USERNAME:rwX var/ files/
         setfacl -R -m u:33:rwX -m u:YOUR_USERNAME:rwX var/ files/
 
+ 2. Install Yarn
+   Follow the procedure: https://yarnpkg.com/lang/en/docs/install/
+
+ 4. Install NodeJs dependencies
+ 
+         yarn install
+ 
+ 3. Compile assets
+ 
+         yarn prod|dev|watch
+
 ## 4. How to configure Haproxy
 
 To access the site on your hostname, you need to configure a reverse proxy, that transfert traffic on the container.
