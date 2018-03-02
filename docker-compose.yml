@@ -59,7 +59,7 @@ services:
                 hard: -1
         volumes:
             - es1_data:/usr/share/elasticsearch/data
-        mem_limit: 1G
+        mem_limit: 1500M
         security_opt:
             - no-new-privileges
         networks:
@@ -79,7 +79,7 @@ services:
                 hard: -1
         volumes:
             - es2_data:/usr/share/elasticsearch/data
-        mem_limit: 1G
+        mem_limit: 1500M
         security_opt:
             - no-new-privileges
         networks:
