@@ -135,14 +135,26 @@ per Docker.
 
         docker exec -it gryc-app bin/console fos:elastica:populate
 
-5. In prod the docker image contains compiled assets, but not in git repo. To compile it, use:
+5. In prod the docker image contains compiled assets, but not in git repo.
 
-        docker run -v /home/mpiot/Development/gryc:/var/www/html -w /var/www/html -i -t node:8 yarn prod
+    5.1. Install node dependencies:
+        
+        docker run -v /path/to/gryc/folder:/var/www/html -w /var/www/html -i -t node:8 yarn install
+            
+    5.2. Compile assets:
+            
+        docker run -v /path/to/gryc/folder:/var/www/html -w /var/www/html -i -t node:8 yarn prod|dev|watch
+      
+      >**prod** to compile with uglify filter
+      
+      >**dev** to compile without uglify filter
+      
+      >**watch** to automatically process a *dev* compilation each time a file is modified
 
 6. Give access rights to the container for var/ and files/ folders
 
-                setfacl -dR -m u:33:rwX -m u:YOUR_USERNAME:rwX var/ files/
-                setfacl -R -m u:33:rwX -m u:YOUR_USERNAME:rwX var/ files/
+        setfacl -dR -m u:33:rwX -m u:YOUR_USERNAME:rwX var/ files/
+        setfacl -R -m u:33:rwX -m u:YOUR_USERNAME:rwX var/ files/
 
 6. Configure your reverse proxy (see 4)
 
