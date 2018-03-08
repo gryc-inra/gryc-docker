@@ -34,7 +34,7 @@ services:
 
     db:
         container_name: gryc-db
-        image: mysql:8.0.3
+        image: mysql:5.7.21
         environment:
           - MYSQL_ROOT_PASSWORD=${DATABASE_ROOT_PASSWORD}
           - MYSQL_USER=${DATABASE_USER}
@@ -89,7 +89,7 @@ services:
 
     rabbitmq:
         container_name: gryc-rabbitmq
-        image: rabbitmq:3.7.0
+        image: rabbitmq:3.7.3
         environment:
             - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
             - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD}
@@ -103,7 +103,7 @@ services:
 
     redis:
         container_name: gryc-redis
-        image: redis:4.0.6
+        image: redis:4.0.8
         volumes:
             - redis_data:/data
         mem_limit: 128M
