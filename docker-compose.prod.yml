@@ -4,9 +4,6 @@ services:
     nginx:
         restart: on-failure:5
         build: ./docker/nginx/prod
-        volumes:
-            - app_src:/var/www/html
-            - app_data:/var/www/html/files
 
     app:
         restart: on-failure:5
@@ -14,7 +11,6 @@ services:
             - SYMFONY_ENV=prod
             - SYMFONY_DEBUG=0
         volumes:
-            - app_src:/var/www/html
             - app_data:/var/www/html/files
 
     db:
@@ -30,7 +26,5 @@ services:
         restart: on-failure:5
 
 volumes:
-    app_src:
-        driver: local
     app_data:
         driver: local

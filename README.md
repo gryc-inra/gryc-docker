@@ -203,9 +203,5 @@ To restore the database:
 
 ## 7. How to update prod version
 
-    docker-compose -f docker-compose.yml -f docker-compose.prod.yml stop
-    docker rm gryc-nginx gryc-app
-    docker volume ls
-    docker volume rm <APP_SRC VOLUME>
     docker pull mapiot/gryc:latest 
     docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d

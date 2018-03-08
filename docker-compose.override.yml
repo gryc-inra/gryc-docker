@@ -5,7 +5,6 @@ services:
         build: ./docker/nginx/dev
         volumes:
             - ./docker/nginx/dev/gryc.conf:/etc/nginx/conf.d/default.conf:ro
-            - ../gryc:/var/www/html:rw
 
     app:
         environment:
@@ -18,11 +17,11 @@ services:
 
     db:
         ports:
-            - 127.0.0.1:3306:3306
+            - 127.0.0.1:${DB_EXPOSED_PORT}:3306
 
     es1:
         ports:
-            - 127.0.0.1:9200:9200
+            - 127.0.0.1:${ES_EXPOSED_PORT}:9200
         volumes:
             - ./docker/elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
 
