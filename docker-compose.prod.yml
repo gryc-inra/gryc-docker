@@ -12,6 +12,7 @@ services:
             - SYMFONY_DEBUG=0
         volumes:
             - app_data:/var/www/html/files
+            - app_src:/var/www/html
 
     db:
         restart: on-failure:5
@@ -27,4 +28,6 @@ services:
 
 volumes:
     app_data:
+        driver: local
+    app_src:
         driver: local
