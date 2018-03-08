@@ -6,6 +6,7 @@ services:
         build: ./docker/nginx/prod
         volumes:
             - app_src:/var/www/html
+            - app_data:/var/www/html/files
 
     app:
         restart: on-failure:5
