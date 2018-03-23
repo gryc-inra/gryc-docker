@@ -11,9 +11,9 @@ services:
             - SYMFONY_ENV=dev
             - SYMFONY_DEBUG=1
         volumes:
-            - ../gryc/docker/dev/php.ini:/usr/local/etc/php/php.ini:ro
-            - ../gryc/docker/dev/php-cli.ini:/usr/local/etc/php/php_cli.ini:ro
-            - ../gryc:/var/www/html:rw
+            - ../gryc-website/docker/dev/php.ini:/usr/local/etc/php/php.ini:ro
+            - ../gryc-website/docker/dev/php-cli.ini:/usr/local/etc/php/php_cli.ini:ro
+            - ../gryc-website:/var/www/html:rw
 
     db:
         ports:
